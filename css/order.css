@@ -1,1 +1,314 @@
+/*==================================================
+  Algeria COD System
+  order.css
+  Version 1.0.0
+==================================================*/
 
+
+/*=========================
+RESET
+=========================*/
+
+*,
+*::before,
+*::after{
+
+    margin:0;
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+
+:root{
+
+    --primary:#2563eb;
+    --primary-hover:#1d4ed8;
+
+    --success:#16a34a;
+
+    --danger:#dc2626;
+
+    --text:#111827;
+
+    --muted:#6b7280;
+
+    --border:#e5e7eb;
+
+    --background:#f5f7fb;
+
+    --white:#ffffff;
+
+    --radius:18px;
+
+    --shadow:
+        0 10px 25px rgba(0,0,0,.08);
+
+}
+
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+
+body{
+
+    font-family:
+
+        Cairo,
+
+        Tahoma,
+
+        sans-serif;
+
+    color:var(--text);
+
+}
+
+
+
+/*=========================
+MAIN CONTAINER
+=========================*/
+
+#algeria-cod-form{
+
+    width:100%;
+
+    max-width:1200px;
+
+    margin:40px auto;
+
+    padding:15px;
+
+    direction:rtl;
+
+}
+
+
+
+/*=========================
+CARD
+=========================*/
+
+.cod-card{
+
+    background:var(--white);
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow);
+
+    padding:35px;
+
+}
+
+
+
+/*=========================
+GRID
+=========================*/
+
+.cod-card{
+
+    display:grid;
+
+    grid-template-columns:
+
+        380px
+
+        1fr;
+
+    gap:40px;
+
+}
+
+
+
+/*=========================
+PRODUCT
+=========================*/
+
+.product-section{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:flex-start;
+
+}
+
+
+#product-image{
+
+    width:100%;
+
+    max-width:320px;
+
+    aspect-ratio:1;
+
+    object-fit:cover;
+
+    border-radius:18px;
+
+    background:#fafafa;
+
+    border:1px solid var(--border);
+
+}
+
+
+#product-name{
+
+    margin-top:20px;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    text-align:center;
+
+}
+
+
+#product-price{
+
+    margin-top:15px;
+
+    color:var(--primary);
+
+    font-size:34px;
+
+    font-weight:800;
+
+}
+
+
+
+/*=========================
+RIGHT SIDE
+=========================*/
+
+.customer-section,
+
+.address-section,
+
+.quantity-section,
+
+.shipping-section,
+
+.summary-section{
+
+    width:100%;
+
+}
+
+
+
+/*=========================
+FORM LAYOUT
+=========================*/
+
+.customer-section,
+
+.address-section{
+
+    display:grid;
+
+    gap:18px;
+
+    margin-bottom:22px;
+
+}
+
+
+.customer-section{
+
+    grid-template-columns:
+
+        repeat(2,1fr);
+
+}
+
+
+.address-section{
+
+    grid-template-columns:
+
+        repeat(2,1fr);
+
+}
+
+
+.address-section textarea{
+
+    grid-column:1/-1;
+
+}
+
+
+
+/*=========================
+LABELS
+=========================*/
+
+label{
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+
+
+/*=========================
+PLACEHOLDER
+=========================*/
+
+::placeholder{
+
+    color:#9ca3af;
+
+}
+
+
+
+/*=========================
+TRANSITIONS
+=========================*/
+
+button,
+
+input,
+
+textarea,
+
+select{
+
+    transition:.25s;
+
+}
+
+
+
+/*=========================
+FOCUS
+=========================*/
+
+input:focus,
+
+textarea:focus,
+
+select:focus{
+
+    outline:none;
+
+}
