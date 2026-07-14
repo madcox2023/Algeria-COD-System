@@ -1,7 +1,7 @@
 /**
  * Algeria COD System
+ * api.js
  * Version: 1.0.0
- * API Layer
  */
 
 import { CONFIG } from "./config.js";
@@ -27,9 +27,7 @@ export async function submitOrder(orderData) {
 
         if (!response.ok) {
 
-            throw new Error(
-                `HTTP ${response.status}`
-            );
+            throw new Error(`HTTP ${response.status}`);
 
         }
 
@@ -43,9 +41,7 @@ export async function submitOrder(orderData) {
 
         };
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error("Submit Order Error:", error);
 
@@ -62,13 +58,33 @@ export async function submitOrder(orderData) {
 }
 
 /**
- * جلب منتج
+ * جلب بيانات المنتج
  */
 export async function fetchProduct(productId) {
 
-    throw new Error(
-        "fetchProduct() not implemented yet."
-    );
+    try {
+
+        const response = await fetch(
+
+            `${CONFIG.API_URL}?action=product&id=${encodeURIComponent(productId)}`
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error(`HTTP ${response.status}`);
+
+        }
+
+        return await response.json();
+
+    } catch (error) {
+
+        console.error("Fetch Product Error:", error);
+
+        return null;
+
+    }
 
 }
 
@@ -77,9 +93,29 @@ export async function fetchProduct(productId) {
  */
 export async function fetchShipping() {
 
-    throw new Error(
-        "fetchShipping() not implemented yet."
-    );
+    try {
+
+        const response = await fetch(
+
+            `${CONFIG.API_URL}?action=shipping`
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error(`HTTP ${response.status}`);
+
+        }
+
+        return await response.json();
+
+    } catch (error) {
+
+        console.error("Fetch Shipping Error:", error);
+
+        return [];
+
+    }
 
 }
 
@@ -88,8 +124,28 @@ export async function fetchShipping() {
  */
 export async function fetchSettings() {
 
-    throw new Error(
-        "fetchSettings() not implemented yet."
-    );
+    try {
+
+        const response = await fetch(
+
+            `${CONFIG.API_URL}?action=settings`
+
+        );
+
+        if (!response.ok) {
+
+            throw new Error(`HTTP ${response.status}`);
+
+        }
+
+        return await response.json();
+
+    } catch (error) {
+
+        console.error("Fetch Settings Error:", error);
+
+        return null;
+
+    }
 
 }
