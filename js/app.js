@@ -1,14 +1,23 @@
 /**
+ * ==========================================
  * Algeria COD System
  * app.js
- * Version 1.0.0
+ * Version 2.0.0
+ * ==========================================
  */
 
 import { CONFIG } from "./config.js";
 
 import {
+    fetchProduct,
+    submitOrder
+} from "./api.js";
+
+import {
     loadWilayas,
-    loadShippingPrices
+    loadShippingPrices,
+    populateWilayas,
+    getShippingPrice
 } from "./shipping.js";
 
 import {
@@ -20,34 +29,52 @@ import {
     formatPrice
 } from "./calculator.js";
 
-import {
-    submitOrder
-} from "./api.js";
+/*==========================================
+GLOBAL VARIABLES
+==========================================*/
 
-document.addEventListener("DOMContentLoaded", init);
+let currentProduct = null;
 
-/**
- * تشغيل النظام
- */
+let currentShippingPrice = 0;
+
+let currentWilayas = [];
+
+let currentShipping = [];
+
+/*==========================================
+DOM ELEMENTS
+==========================================*/
+
+const elements = {};
+
+/*==========================================
+START APPLICATION
+==========================================*/
+
+document.addEventListener(
+    "DOMContentLoaded",
+    init
+);
+
+/*==========================================
+INIT
+==========================================*/
+
 async function init() {
 
-    console.log("Algeria COD System Started");
+    console.log(
+        "Algeria COD System v2 Started"
+    );
 
     try {
 
-        // تحميل الولايات
-        await loadWilayas();
+        cacheElements();
 
-        // تحميل أسعار الشحن
-        await loadShippingPrices();
+        await initializeSystem();
 
-        // إنشاء الفورم
-        renderForm();
+    }
 
-        // ربط الأحداث
-        bindEvents();
-
-    } catch (error) {
+    catch (error) {
 
         console.error(error);
 
@@ -55,160 +82,104 @@ async function init() {
 
 }
 
-/**
- * إنشاء الفورم
- */
-function renderForm() {
+/*==========================================
+CACHE DOM
+==========================================*/
 
-    const container = document.getElementById("algeria-cod-form");
+function cacheElements() {
 
-    if (!container) {
+    elements.container =
+        document.getElementById(
+            "algeria-cod-form"
+        );
 
-        console.error("Container #algeria-cod-form not found.");
+    elements.image =
+        document.getElementById(
+            "product-image"
+        );
 
-        return;
+    elements.productName =
+        document.getElementById(
+            "product-name"
+        );
 
-    }
+    elements.productPrice =
+        document.getElementById(
+            "product-price"
+        );
 
-    // قراءة معرف المنتج من Raw HTML
-    const productId = container.dataset.product;
+    elements.customerName =
+        document.getElementById(
+            "customer-name"
+        );
 
-    console.log("Product ID:", productId);
+    elements.phone =
+        document.getElementById(
+            "phone"
+        );
 
-    container.innerHTML = `
+    elements.wilaya =
+        document.getElementById(
+            "wilaya"
+        );
 
-<div class="cod-wrapper">
+    elements.commune =
+        document.getElementById(
+            "commune"
+        );
 
-    <div class="product-box">
+    elements.address =
+        document.getElementById(
+            "address"
+        );
 
-        <img
-            id="product-image"
-            src=""
-            alt="Product"
-        >
+    elements.quantity =
+        document.getElementById(
+            "quantity"
+        );
 
-        <h2 id="product-name"></h2>
+    elements.plus =
+        document.getElementById(
+            "plus-btn"
+        );
 
-        <h3 id="product-price"></h3>
+    elements.minus =
+        document.getElementById(
+            "minus-btn"
+        );
 
-    </div>
+    elements.summaryProduct =
+        document.getElementById(
+            "summary-product"
+        );
 
-    <form id="order-form">
+    elements.summaryShipping =
+        document.getElementById(
+            "summary-shipping"
+        );
 
-        <input
-            type="text"
-            id="customer-name"
-            placeholder="الاسم الكامل"
-        >
+    elements.summaryTotal =
+        document.getElementById(
+            "summary-total"
+        );
 
-        <input
-            type="tel"
-            id="phone"
-            placeholder="رقم الهاتف"
-        >
-
-        <select id="wilaya">
-
-            <option value="">
-                اختر الولاية
-            </option>
-
-        </select>
-
-        <select id="commune">
-
-            <option value="">
-                اختر البلدية
-            </option>
-
-        </select>
-
-        <textarea
-            id="address"
-            placeholder="العنوان"
-        ></textarea>
-
-        <input
-            type="number"
-            id="quantity"
-            value="${CONFIG.DEFAULT_QUANTITY}"
-            min="1"
-        >
-
-        <select id="shipping-type">
-
-            <option value="Home">
-                إلى المنزل
-            </option>
-
-            <option value="Desk">
-                مكتب التوصيل
-            </option>
-
-        </select>
-
-        <div class="summary">
-
-            <div>
-
-                سعر المنتج :
-
-                <span id="summary-product">
-
-                    0 ${CONFIG.CURRENCY}
-
-                </span>
-
-            </div>
-
-            <div>
-
-                سعر الشحن :
-
-                <span id="summary-shipping">
-
-                    0 ${CONFIG.CURRENCY}
-
-                </span>
-
-            </div>
-
-            <div>
-
-                الإجمالي :
-
-                <span id="summary-total">
-
-                    0 ${CONFIG.CURRENCY}
-
-                </span>
-
-            </div>
-
-        </div>
-
-        <button
-            type="submit"
-            id="submit-order"
-        >
-
-            تأكيد الطلب
-
-        </button>
-
-    </form>
-
-</div>
-
-`;
+    elements.submit =
+        document.getElementById(
+            "submit-order"
+        );
 
 }
 
-/**
- * ربط الأحداث
- */
-function bindEvents() {
+/*==========================================
+INITIALIZE SYSTEM
+==========================================*/
 
-    console.log("Events Ready");
+async function initializeSystem() {
+
+    console.log(
+        "Loading system..."
+    );
 
 }
+
+/* END PART 1 */
