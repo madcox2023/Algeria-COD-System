@@ -183,3 +183,118 @@ async function initializeSystem() {
 }
 
 /* END PART 1 */
+/*==========================================
+LOAD PRODUCT
+==========================================*/
+
+async function loadProduct() {
+
+    const productId =
+        elements.container.dataset.product;
+
+    if (!productId) {
+
+        throw new Error(
+            "Product ID not found."
+        );
+
+    }
+
+    console.log(
+        "Loading product:",
+        productId
+    );
+
+    const result =
+        await fetchProduct(productId);
+
+    if (!result || !result.success) {
+
+        throw new Error(
+            "Unable to load product."
+        );
+
+    }
+
+    currentProduct =
+        result.product;
+
+    renderProduct();
+
+}
+
+/*==========================================
+RENDER PRODUCT
+==========================================*/
+
+function renderProduct() {
+
+    if (!currentProduct) {
+
+        return;
+
+    }
+
+    elements.productName.textContent =
+        currentProduct.name;
+
+    elements.productPrice.textContent =
+        formatPrice(
+            currentProduct.price,
+            CONFIG.CURRENCY
+        );
+
+    elements.summaryProduct.textContent =
+        formatPrice(
+            currentProduct.price,
+            CONFIG.CURRENCY
+        );
+
+    if (currentProduct.image) {
+
+        elements.image.src =
+            currentProduct.image;
+
+    }
+
+}
+
+/*==========================================
+LOAD SHIPPING
+==========================================*/
+
+async function loadShippingData() {
+
+    currentWilayas =
+        await loadWilayas();
+
+    currentShipping =
+        await loadShippingPrices();
+
+    populateWilayas(
+        elements.wilaya
+    );
+
+}
+
+/*==========================================
+UPDATE INITIALIZE SYSTEM
+==========================================*/
+
+async function initializeSystem() {
+
+    console.log(
+        "Initializing..."
+    );
+
+    await loadProduct();
+
+    await loadShippingData();
+
+    console.log(
+        "System Ready"
+    );
+
+}
+
+/* END PART 2 */
