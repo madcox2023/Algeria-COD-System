@@ -274,19 +274,17 @@ INITIALIZE SYSTEM
 
 async function initializeSystem() {
 
-    console.log(
-        "Initializing..."
-    );
+    console.log("Initializing...");
 
     await loadProduct();
 
     await loadShippingData();
 
+    bindEvents();
+
     updateSummary();
 
-    console.log(
-        "System Ready"
-    );
+    console.log("System Ready");
 
 }
 
