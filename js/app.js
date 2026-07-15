@@ -282,3 +282,161 @@ async function initializeSystem() {
 }
 
 /* END PART 2 */
+
+/*==========================================
+BIND EVENTS
+==========================================*/
+
+function bindEvents() {
+
+    elements.plus.addEventListener(
+        "click",
+        () => changeQuantity(1)
+    );
+
+    elements.minus.addEventListener(
+        "click",
+        () => changeQuantity(-1)
+    );
+
+    elements.wilaya.addEventListener(
+        "change",
+        updateShipping
+    );
+
+    elements.commune.addEventListener(
+        "change",
+        updateSummary
+    );
+
+    document
+        .querySelectorAll(
+            'input[name="shipping"]'
+        )
+        .forEach(radio => {
+
+            radio.addEventListener(
+                "change",
+                updateShipping
+            );
+
+        });
+
+}
+
+/*==========================================
+CHANGE QUANTITY
+==========================================*/
+
+function changeQuantity(step) {
+
+    let quantity =
+        Number(elements.quantity.value);
+
+    quantity += step;
+
+    if (quantity < 1) {
+
+        quantity = 1;
+
+    }
+
+    elements.quantity.value =
+        quantity;
+
+    updateSummary();
+
+}
+
+/*==========================================
+UPDATE SHIPPING
+==========================================*/
+
+function updateShipping() {
+
+    const wilaya =
+        elements.wilaya.value;
+
+    populateCommunes(
+
+        wilaya,
+
+        elements.commune
+
+    );
+
+    const shippingType =
+
+        document.querySelector(
+
+            'input[name="shipping"]:checked'
+
+        ).value;
+
+    currentShippingPrice =
+        getShippingPrice(
+
+            wilaya,
+
+            shippingType
+
+        );
+
+    updateSummary();
+
+}
+
+/*==========================================
+UPDATE SUMMARY
+==========================================*/
+
+function updateSummary() {
+
+    if (!currentProduct) {
+
+        return;
+
+    }
+
+    const quantity =
+        Number(elements.quantity.value);
+
+    const total =
+        calculateOrderTotal(
+
+            currentProduct.price,
+
+            quantity,
+
+            currentShippingPrice
+
+        );
+
+    elements.summaryProduct.textContent =
+        formatPrice(
+
+            currentProduct.price * quantity,
+
+            CONFIG.CURRENCY
+
+        );
+
+    elements.summaryShipping.textContent =
+        formatPrice(
+
+            currentShippingPrice,
+
+            CONFIG.CURRENCY
+
+        );
+
+    elements.summaryTotal.textContent =
+        formatPrice(
+
+            total,
+
+            CONFIG.CURRENCY
+
+        );
+
+}
