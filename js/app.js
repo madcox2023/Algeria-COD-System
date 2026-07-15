@@ -751,3 +751,122 @@ const orderTotal =
         );
 
 }
+
+/*==========================================
+SUBMIT ORDER
+==========================================*/
+
+async function submitCurrentOrder() {
+
+    const order = {
+
+        productId:
+            state.product.id,
+
+        productName:
+            state.product.name,
+
+        customerName:
+            elements.customerName.value.trim(),
+
+        phone:
+            elements.phone.value.trim(),
+
+        wilaya:
+            state.selectedWilaya
+                ? state.selectedWilaya.wilaya
+                : "",
+
+        commune:
+            state.selectedCommune || "",
+
+        address:
+            elements.address.value.trim(),
+
+        quantity:
+            state.quantity,
+
+        shippingType:
+            state.shippingType,
+
+        shippingPrice:
+            state.shippingPrice,
+
+        productPrice:
+            state.product.price,
+
+        total:
+            (
+                state.product.price *
+                state.quantity
+            ) +
+            state.shippingPrice
+
+    };
+
+    const validation =
+        validateOrder(order);
+
+    if (!validation.valid) {
+
+        alert(
+            validation.message
+        );
+
+        return;
+
+    }
+
+    elements.submit.disabled =
+        true;
+
+    elements.submit.textContent =
+        "جارٍ إرسال الطلب...";
+
+    try {
+
+        const result =
+            await submitOrder(order);
+
+        if (
+            result &&
+            result.success
+        ) {
+
+            alert(
+                "✅ تم إرسال الطلب بنجاح"
+            );
+
+        }
+
+        else {
+
+            alert(
+                "❌ فشل إرسال الطلب"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "حدث خطأ أثناء الإرسال"
+        );
+
+    }
+
+    finally {
+
+        elements.submit.disabled =
+            false;
+
+        elements.submit.textContent =
+            "تأكيد الطلب";
+
+    }
+
+}
