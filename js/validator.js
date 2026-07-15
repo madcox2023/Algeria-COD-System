@@ -7,7 +7,18 @@
  * إزالة المسافات الزائدة
  */
 export function sanitize(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
     return String(value).trim();
+
 }
 
 /**
@@ -33,20 +44,32 @@ export function validateName(name) {
  */
 export function validatePhone(phone) {
 
-    phone = sanitize(phone).replace(/\s/g, "");
+    phone = sanitize(phone)
+        .replace(/\s/g, "")
+        .replace("+213", "0")
+        .replace(/^213/, "0");
 
-    const regex = /^(05|06|07)[0-9]{8}$/;
+    const regex =
+        /^(05|06|07)[0-9]{8}$/;
 
     if (!regex.test(phone)) {
 
         return {
+
             valid: false,
-            message: "رقم الهاتف غير صحيح."
+
+            message:
+                "رقم الهاتف غير صحيح."
+
         };
 
     }
 
-    return { valid: true };
+    return {
+
+        valid: true
+
+    };
 
 }
 
