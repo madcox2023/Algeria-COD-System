@@ -2,7 +2,7 @@
  * ==========================================
  * Algeria COD System
  * app.js
- * Version 2.0.0
+ * Version 3.0.0 Stable
  * ==========================================
  */
 
@@ -14,39 +14,87 @@ import {
 } from "./api.js";
 
 import {
-    loadWilayas,
-    loadShippingPrices,
-    populateWilayas,
-    populateCommunes,
-    getShippingPrice
+    loadShippingPrices
 } from "./shipping.js";
-
-import {
-    validateOrder
-} from "./validator.js";
 
 import {
     calculateOrderTotal,
     formatPrice
 } from "./calculator.js";
 
+import {
+    validateOrder
+} from "./validator.js";
+
 /*==========================================
-GLOBAL VARIABLES
+APPLICATION STATE
 ==========================================*/
 
-let currentProduct = null;
+const state = {
 
-let currentShippingPrice = 0;
+    product: null,
 
+    shippingData: [],
 
+    selectedWilaya: null,
+
+    selectedCommune: null,
+
+    shippingType: "Home",
+
+    shippingPrice: 0,
+
+    quantity: 1,
+
+    loading: false
+
+};
 /*==========================================
-DOM ELEMENTS
+DOM CACHE
 ==========================================*/
 
-const elements = {};
+const elements = {
+
+    container: null,
+
+    image: null,
+
+    productName: null,
+
+    productPrice: null,
+
+    customerName: null,
+
+    phone: null,
+
+    address: null,
+
+    quantity: null,
+
+    plus: null,
+
+    minus: null,
+
+    submit: null,
+
+    summaryProduct: null,
+
+    summaryShipping: null,
+
+    summaryTotal: null,
+
+    wilayaButton: null,
+
+    wilayaList: null,
+
+    communeButton: null,
+
+    communeList: null
+
+};
 
 /*==========================================
-START APPLICATION
+DOM READY
 ==========================================*/
 
 document.addEventListener(
@@ -61,7 +109,7 @@ INIT
 async function init() {
 
     console.log(
-        "Algeria COD System v2 Started"
+        "Algeria COD System v3"
     );
 
     try {
@@ -74,7 +122,9 @@ async function init() {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            error
+        );
 
     }
 
@@ -116,18 +166,6 @@ function cacheElements() {
             "phone"
         );
 
-   elements.wilayaBtn =
-    document.getElementById("wilaya-btn");
-
-elements.wilayaList =
-    document.getElementById("wilaya-list");
-
-elements.communeBtn =
-    document.getElementById("commune-btn");
-
-elements.communeList =
-    document.getElementById("commune-list");
-
     elements.address =
         document.getElementById(
             "address"
@@ -148,6 +186,11 @@ elements.communeList =
             "minus-btn"
         );
 
+    elements.submit =
+        document.getElementById(
+            "submit-order"
+        );
+
     elements.summaryProduct =
         document.getElementById(
             "summary-product"
@@ -163,16 +206,71 @@ elements.communeList =
             "summary-total"
         );
 
-    elements.submit =
+    elements.wilayaButton =
         document.getElementById(
-            "submit-order"
+            "wilaya-btn"
+        );
+
+    elements.wilayaList =
+        document.getElementById(
+            "wilaya-list"
+        );
+
+    elements.communeButton =
+        document.getElementById(
+            "commune-btn"
+        );
+
+    elements.communeList =
+        document.getElementById(
+            "commune-list"
         );
 
 }
 
+/*==========================================
+INITIALIZE SYSTEM
+==========================================*/
 
+async function initializeSystem() {
 
-/* END PART 1 */
+    state.loading = true;
+
+    try {
+
+        await Promise.all([
+
+            loadProduct(),
+
+            loadShipping()
+
+        ]);
+
+        bindEvents();
+
+        updateSummary();
+
+        state.loading = false;
+
+        console.log(
+            "System Ready"
+        );
+
+    }
+
+    catch (error) {
+
+        state.loading = false;
+
+        console.error(
+            "Initialize Error:",
+            error
+        );
+
+    }
+
+}
+
 /*==========================================
 LOAD PRODUCT
 ==========================================*/
@@ -190,15 +288,20 @@ async function loadProduct() {
 
     }
 
-    console.log(
-        "Loading product:",
-        productId
-    );
-
     const result =
-        await fetchProduct(productId);
+        await fetchProduct(
+            productId
+        );
 
-    if (!result || !result.success) {
+    if (
+
+        !result ||
+
+        !result.success ||
+
+        !result.product
+
+    ) {
 
         throw new Error(
             "Unable to load product."
@@ -206,7 +309,7 @@ async function loadProduct() {
 
     }
 
-    currentProduct =
+    state.product =
         result.product;
 
     renderProduct();
@@ -219,31 +322,49 @@ RENDER PRODUCT
 
 function renderProduct() {
 
-    if (!currentProduct) {
+    if (!state.product) {
 
         return;
 
     }
 
     elements.productName.textContent =
-        currentProduct.name;
+
+        state.product.name;
 
     elements.productPrice.textContent =
+
         formatPrice(
-            currentProduct.price,
+
+            state.product.price,
+
             CONFIG.CURRENCY
+
         );
 
     elements.summaryProduct.textContent =
+
         formatPrice(
-            currentProduct.price,
+
+            state.product.price,
+
             CONFIG.CURRENCY
+
         );
 
-    if (currentProduct.image) {
+    if (state.product.image) {
 
         elements.image.src =
-            currentProduct.image;
+            state.product.image;
+
+        elements.image.onerror =
+            () => {
+
+                console.warn(
+                    "Image Load Failed"
+                );
+
+            };
 
     }
 
@@ -253,63 +374,258 @@ function renderProduct() {
 LOAD SHIPPING
 ==========================================*/
 
-async function loadShippingData() {
+async function loadShipping() {
 
-  const data = await loadShippingPrices();
+    const data =
+        await loadShippingPrices();
 
-console.log("Shipping Data:", data);
+    state.shippingData =
 
-populateWilayas(elements.wilaya);
+        Array.isArray(data)
+            ? data
+            : [];
+
+    buildWilayaDropdown();
 
 }
 
 /*==========================================
-INITIALIZE SYSTEM
+BUILD WILAYA DROPDOWN
 ==========================================*/
 
-async function initializeSystem() {
+function buildWilayaDropdown() {
 
-    console.log("Initializing...");
+    elements.wilayaList.innerHTML = "";
 
-    await loadProduct();
+    state.shippingData.forEach(item => {
 
-    await loadShippingData();
+        const option =
+            document.createElement("div");
 
-    bindEvents();
+        option.className =
+            "dropdown-item";
 
-    updateSummary();
+        option.textContent =
+            item.code +
+            " - " +
+            item.wilaya;
 
-    console.log("System Ready");
+        option.addEventListener(
+            "click",
+            () => selectWilaya(item)
+        );
+
+        elements.wilayaList.appendChild(
+            option
+        );
+
+    });
 
 }
 
-/* END PART 2 */
+/*==========================================
+BUILD COMMUNE DROPDOWN
+==========================================*/
 
+function buildCommuneDropdown(
+    wilaya
+) {
+
+    elements.communeList.innerHTML = "";
+
+    if (!wilaya) {
+
+        return;
+
+    }
+
+    wilaya.communes.forEach(commune => {
+
+        const option =
+            document.createElement("div");
+
+        option.className =
+            "dropdown-item";
+
+        option.textContent =
+            commune;
+
+        option.addEventListener(
+            "click",
+            () => selectCommune(commune)
+        );
+
+        elements.communeList.appendChild(
+            option
+        );
+
+    });
+
+}
+
+/*==========================================
+SELECT WILAYA
+==========================================*/
+
+function selectWilaya(
+    wilaya
+) {
+
+    state.selectedWilaya =
+        wilaya;
+
+    state.selectedCommune =
+        null;
+
+    elements.wilayaButton.textContent =
+        wilaya.code +
+        " - " +
+        wilaya.wilaya;
+
+    elements.communeButton.textContent =
+        "اختر البلدية";
+
+    buildCommuneDropdown(
+        wilaya
+    );
+
+    closeDropdowns();
+
+    updateShipping();
+
+}
+
+/*==========================================
+SELECT COMMUNE
+==========================================*/
+
+function selectCommune(
+    commune
+) {
+
+    state.selectedCommune =
+        commune;
+
+    elements.communeButton.textContent =
+        commune;
+
+    closeDropdowns();
+
+}
+
+/*==========================================
+OPEN / CLOSE DROPDOWN
+==========================================*/
+
+function toggleDropdown(
+    list
+) {
+
+    closeDropdowns();
+
+    list.classList.toggle(
+        "show"
+    );
+
+}
+
+function closeDropdowns() {
+
+    elements.wilayaList.classList.remove(
+        "show"
+    );
+
+    elements.communeList.classList.remove(
+        "show"
+    );
+
+}
 /*==========================================
 BIND EVENTS
 ==========================================*/
 
 function bindEvents() {
 
+    /* Wilaya Button */
+
+    elements.wilayaButton.addEventListener(
+        "click",
+        (event) => {
+
+            event.stopPropagation();
+
+            toggleDropdown(
+                elements.wilayaList
+            );
+
+        }
+    );
+
+    /* Commune Button */
+
+    elements.communeButton.addEventListener(
+        "click",
+        (event) => {
+
+            if (!state.selectedWilaya) {
+
+                return;
+
+            }
+
+            event.stopPropagation();
+
+            toggleDropdown(
+                elements.communeList
+            );
+
+        }
+    );
+
+    /* Close Dropdowns */
+
+    document.addEventListener(
+        "click",
+        closeDropdowns
+    );
+
+    /* Quantity */
+
     elements.plus.addEventListener(
         "click",
-        () => changeQuantity(1)
+        () => {
+
+            state.quantity++;
+
+            elements.quantity.value =
+                state.quantity;
+
+            updateSummary();
+
+        }
     );
 
     elements.minus.addEventListener(
         "click",
-        () => changeQuantity(-1)
+        () => {
+
+            if (state.quantity <= 1) {
+
+                return;
+
+            }
+
+            state.quantity--;
+
+            elements.quantity.value =
+                state.quantity;
+
+            updateSummary();
+
+        }
     );
 
-    elements.wilaya.addEventListener(
-        "change",
-        updateShipping
-    );
-
-    elements.commune.addEventListener(
-        "change",
-        updateSummary
-    );
+    /* Shipping Type */
 
     document
         .querySelectorAll(
@@ -319,34 +635,24 @@ function bindEvents() {
 
             radio.addEventListener(
                 "change",
-                updateShipping
+                (event) => {
+
+                    state.shippingType =
+                        event.target.value;
+
+                    updateShipping();
+
+                }
             );
 
         });
 
-}
+    /* Submit */
 
-/*==========================================
-CHANGE QUANTITY
-==========================================*/
-
-function changeQuantity(step) {
-
-    let quantity =
-        Number(elements.quantity.value);
-
-    quantity += step;
-
-    if (quantity < 1) {
-
-        quantity = 1;
-
-    }
-
-    elements.quantity.value =
-        quantity;
-
-    updateSummary();
+    elements.submit.addEventListener(
+        "click",
+        submitCurrentOrder
+    );
 
 }
 
@@ -356,42 +662,33 @@ UPDATE SHIPPING
 
 function updateShipping() {
 
-    console.log("===== UPDATE SHIPPING =====");
+    if (!state.selectedWilaya) {
 
-    const wilaya = elements.wilaya.value;
+        state.shippingPrice = 0;
 
-    console.log("Selected Wilaya:", wilaya);
+        updateSummary();
 
-    populateCommunes(
-        wilaya,
-        elements.commune
-    );
+        return;
 
-    console.log(
-        "Commune HTML:",
-        elements.commune.innerHTML
-    );
+    }
 
-    const shippingType =
-        document.querySelector(
-            'input[name="shipping"]:checked'
-        ).value;
+    if (state.shippingType === "Home") {
 
-    console.log(
-        "Shipping Type:",
-        shippingType
-    );
+        state.shippingPrice =
+            Number(
+                state.selectedWilaya.home
+            );
 
-    currentShippingPrice =
-        getShippingPrice(
-            wilaya,
-            shippingType
-        );
+    }
 
-    console.log(
-        "Shipping Price:",
-        currentShippingPrice
-    );
+    else {
+
+        state.shippingPrice =
+            Number(
+                state.selectedWilaya.desk
+            );
+
+    }
 
     updateSummary();
 
@@ -403,48 +700,59 @@ UPDATE SUMMARY
 
 function updateSummary() {
 
-    if (!currentProduct) {
+    if (!state.product) {
 
         return;
 
     }
 
-    const quantity =
-        Number(elements.quantity.value);
+    const productTotal =
 
-    const total =
+        Number(
+            state.product.price
+        ) *
+        state.quantity;
+
+    const orderTotal =
+
         calculateOrderTotal(
 
-            currentProduct.price,
+            state.product.price,
 
-            quantity,
+            state.quantity,
 
-            currentShippingPrice
+            state.shippingPrice
 
         );
 
+    elements.quantity.value =
+        state.quantity;
+
     elements.summaryProduct.textContent =
+
         formatPrice(
 
-            currentProduct.price * quantity,
+            productTotal,
 
             CONFIG.CURRENCY
 
         );
 
     elements.summaryShipping.textContent =
+
         formatPrice(
 
-            currentShippingPrice,
+            state.shippingPrice,
 
             CONFIG.CURRENCY
 
         );
 
     elements.summaryTotal.textContent =
+
         formatPrice(
 
-            total,
+            orderTotal,
 
             CONFIG.CURRENCY
 
