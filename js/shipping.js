@@ -2,36 +2,55 @@
  * ==========================================
  * Algeria COD System
  * shipping.js
- * Version 2.0.0
+ * Version 3.0.0 Stable
  * ==========================================
  */
 
 import { CONFIG } from "./config.js";
 
-/* بيانات الشحن */
+/*==========================================
+PRIVATE STATE
+==========================================*/
+
 let shippingData = [];
-let selectedWilaya = "";
-let selectedCommune = "";
-/**
- * تحميل بيانات الشحن من Google Sheet
- */
+
+/*==========================================
+LOAD SHIPPING
+==========================================*/
+
 export async function loadShippingPrices() {
 
     try {
 
-        const response = await fetch(
-            CONFIG.API_URL + "?action=shipping"
-        );
+        const response =
+            await fetch(
+                CONFIG.API_URL +
+                "?action=shipping"
+            );
 
-        const json = await response.json();
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+        const json =
+            await response.json();
 
         if (!json.success) {
+
+            shippingData = [];
 
             return [];
 
         }
 
-        shippingData = json.shipping;
+        shippingData =
+            Array.isArray(json.shipping)
+                ? json.shipping
+                : [];
 
         return shippingData;
 
@@ -39,7 +58,12 @@ export async function loadShippingPrices() {
 
     catch (error) {
 
-        console.error(error);
+        console.error(
+            "Shipping Error:",
+            error
+        );
+
+        shippingData = [];
 
         return [];
 
@@ -47,160 +71,83 @@ export async function loadShippingPrices() {
 
 }
 
-/**
- * لم نعد نستخدم wilayas.json
- */
-export async function loadWilayas() {
+/*==========================================
+GET ALL WILAYAS
+==========================================*/
+
+export function getShippingData() {
 
     return shippingData;
 
 }
 
-/**
- * تعبئة قائمة الولايات
- */
-export function populateWilayas(
-    button,
-    list
-) {
+/*==========================================
+GET ONE WILAYA
+==========================================*/
 
-    list.innerHTML = "";
+export function getWilaya(name) {
 
-    shippingData.forEach(item => {
+    return shippingData.find(
 
-        const div =
-            document.createElement("div");
+        item => item.wilaya === name
 
-        div.className =
-            "dropdown-item";
-
-        div.textContent =
-            item.code + " - " + item.wilaya;
-
-        div.onclick = () => {
-
-            selectedWilaya =
-                item.wilaya;
-
-            button.textContent =
-                item.code +
-                " - " +
-                item.wilaya;
-
-            list.classList.remove("show");
-
-        };
-
-        list.appendChild(div);
-
-    });
+    ) || null;
 
 }
 
-/**
- * تعبئة البلديات
- */
-export function populateCommunes(
-    wilaya,
-    button,
-    list
-) {
+/*==========================================
+GET COMMUNES
+==========================================*/
 
-    list.innerHTML = "";
+export function getCommunes(name) {
 
-    const item =
-        shippingData.find(
+    const wilaya =
+        getWilaya(name);
 
-            x => x.wilaya === wilaya
+    if (!wilaya) {
 
-        );
-
-    if (!item) {
-
-        return;
+        return [];
 
     }
 
-    item.communes.forEach(name => {
+    return Array.isArray(
+        wilaya.communes
+    )
 
-        const div =
-            document.createElement("div");
+        ? wilaya.communes
 
-        div.className =
-            "dropdown-item";
-
-        div.textContent =
-            name;
-
-        div.onclick = () => {
-
-            selectedCommune =
-                name;
-
-            button.textContent =
-                name;
-
-            list.classList.remove("show");
-
-        };
-
-        list.appendChild(div);
-
-    });
+        : [];
 
 }
- 
-/**
- * سعر الشحن
- */
+
+/*==========================================
+GET SHIPPING PRICE
+==========================================*/
+
 export function getShippingPrice(
-    wilaya,
+    wilayaName,
     shippingType
 ) {
 
-    const item =
-        shippingData.find(
-
-            x => x.wilaya === wilaya
-
+    const wilaya =
+        getWilaya(
+            wilayaName
         );
 
-    if (!item) {
+    if (!wilaya) {
 
         return 0;
 
     }
 
-    if (shippingType === "Home") {
+    return shippingType === "Home"
 
-        return Number(item.home);
+        ? Number(
+            wilaya.home
+        )
 
-    }
-
-    return Number(item.desk);
-
-}
-
-/**
- * الحصول على ولاية
- */
-export function getWilaya(name) {
-
-    return shippingData.find(
-
-        x => x.wilaya === name
-
-    );
-
-}
-export function getSelectedWilaya() {
-
-    return selectedWilaya;
-
-}
-
-export function getSelectedCommune() {
-
-    return selectedCommune;
+        : Number(
+            wilaya.desk
+        );
 
 }
