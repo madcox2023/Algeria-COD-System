@@ -13,25 +13,44 @@ export async function submitOrder(orderData) {
 
     try {
 
-        const response = await fetch(CONFIG.API_URL, {
+        const formData =
+            new URLSearchParams();
 
-            method: "POST",
+        Object.keys(orderData)
+            .forEach(key => {
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+                formData.append(
+                    key,
+                    orderData[key]
+                );
 
-            body: JSON.stringify(orderData)
+            });
 
-        });
+        const response =
+            await fetch(
+
+                CONFIG.API_URL,
+
+                {
+
+                    method: "POST",
+
+                    body: formData
+
+                }
+
+            );
 
         if (!response.ok) {
 
-            throw new Error(`HTTP ${response.status}`);
+            throw new Error(
+                `HTTP ${response.status}`
+            );
 
         }
 
-        const result = await response.json();
+        const result =
+            await response.json();
 
         return {
 
@@ -41,9 +60,14 @@ export async function submitOrder(orderData) {
 
         };
 
-    } catch (error) {
+    }
 
-        console.error("Submit Order Error:", error);
+    catch (error) {
+
+        console.error(
+            "Submit Order Error:",
+            error
+        );
 
         return {
 
