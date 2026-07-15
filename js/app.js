@@ -268,7 +268,7 @@ async function loadShippingData() {
 }
 
 /*==========================================
-UPDATE INITIALIZE SYSTEM
+INITIALIZE SYSTEM
 ==========================================*/
 
 async function initializeSystem() {
@@ -280,6 +280,8 @@ async function initializeSystem() {
     await loadProduct();
 
     await loadShippingData();
+
+    updateSummary();
 
     console.log(
         "System Ready"
