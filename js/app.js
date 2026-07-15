@@ -835,9 +835,11 @@ async function submitCurrentOrder() {
 
             alert(
                 "✅ تم إرسال الطلب بنجاح"
-            );
+              );
 
-        }
+    resetForm();
+
+}
 
         else {
 
