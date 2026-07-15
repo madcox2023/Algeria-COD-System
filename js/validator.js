@@ -196,104 +196,46 @@ export function validateProduct(productId) {
  */
 export function validateOrder(order) {
 
-    let result;
+    const validators = [
 
-    result =
-        validateName(
-            order.customerName
-        );
+        validateName(order.customerName),
 
-    if (!result.valid) {
+        validatePhone(order.phone),
 
-        return result;
+        validateWilaya(order.wilaya),
 
-    }
+        validateCommune(order.commune),
 
-    result =
-        validatePhone(
-            order.phone
-        );
+        validateQuantity(order.quantity),
 
-    if (!result.valid) {
+        validateShipping(order.shippingType),
 
-        return result;
+        validateProduct(order.productId)
 
-    }
+    ];
 
-    result =
-        validateWilaya(
-            order.wilaya
-        );
+    for (const result of validators) {
 
-    if (!result.valid) {
+        if (!result.valid) {
 
-        return result;
+            return result;
+
+        }
 
     }
 
-    result =
-        validateCommune(
-            order.commune
-        );
+    if (order.shippingType === "Home") {
 
-    if (!result.valid) {
+        const addressResult =
+            validateAddress(
+                order.address
+            );
 
-        return result;
+        if (!addressResult.valid) {
 
-    }
+            return addressResult;
 
-    result =
-        if (order.shippingType === "Home") {
-
-    const result =
-        validateAddress(
-            order.address
-        );
-
-    if (!result.valid) {
-
-        return result;
-
-    }
-
-}
-
-    if (!result.valid) {
-
-        return result;
-
-    }
-
-    result =
-        validateQuantity(
-            order.quantity
-        );
-
-    if (!result.valid) {
-
-        return result;
-
-    }
-
-    result =
-        validateShipping(
-            order.shippingType
-        );
-
-    if (!result.valid) {
-
-        return result;
-
-    }
-
-    result =
-        validateProduct(
-            order.productId
-        );
-
-    if (!result.valid) {
-
-        return result;
+        }
 
     }
 
