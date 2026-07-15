@@ -116,15 +116,17 @@ function cacheElements() {
             "phone"
         );
 
-    elements.wilaya =
-        document.getElementById(
-            "wilaya"
-        );
+   elements.wilayaBtn =
+    document.getElementById("wilaya-btn");
 
-    elements.commune =
-        document.getElementById(
-            "commune"
-        );
+elements.wilayaList =
+    document.getElementById("wilaya-list");
+
+elements.communeBtn =
+    document.getElementById("commune-btn");
+
+elements.communeList =
+    document.getElementById("commune-list");
 
     elements.address =
         document.getElementById(
