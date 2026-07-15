@@ -253,11 +253,11 @@ LOAD SHIPPING
 
 async function loadShippingData() {
 
-    await loadShippingPrices();
+  const data = await loadShippingPrices();
 
-    populateWilayas(
-        elements.wilaya
-    );
+console.log("Shipping Data:", data);
+
+populateWilayas(elements.wilaya);
 
 }
 
