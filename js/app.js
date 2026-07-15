@@ -828,16 +828,11 @@ async function submitCurrentOrder() {
         const result =
             await submitOrder(order);
 
-        if (
-            result &&
-            result.success
-        ) {
+        if (result.success) {
 
-            alert(
-                "✅ تم إرسال الطلب بنجاح"
-              );
-
-    resetForm();
+    alert(
+        "تم إرسال الطلب بنجاح"
+    );
 
 }
 
