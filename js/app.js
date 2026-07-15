@@ -707,23 +707,15 @@ function updateSummary() {
     }
 
     const productTotal =
+    Number(state.product.price) *
+    state.quantity;
 
-        Number(
-            state.product.price
-        ) *
-        state.quantity;
+const shippingTotal =
+    Number(state.shippingPrice);
 
-    const orderTotal =
-
-        calculateOrderTotal(
-
-            state.product.price,
-
-            state.quantity,
-
-            state.shippingPrice
-
-        );
+const orderTotal =
+    productTotal +
+    shippingTotal;
 
     elements.quantity.value =
         state.quantity;
