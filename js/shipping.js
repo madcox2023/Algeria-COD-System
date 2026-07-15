@@ -10,7 +10,8 @@ import { CONFIG } from "./config.js";
 
 /* بيانات الشحن */
 let shippingData = [];
-
+let selectedWilaya = "";
+let selectedCommune = "";
 /**
  * تحميل بيانات الشحن من Google Sheet
  */
@@ -55,68 +56,6 @@ export async function loadWilayas() {
 
 }
 
-/**
- * تعبئة الولايات
- */
-export function populateWilayas(select) {
-
-    select.innerHTML =
-        '<option value="">اختر الولاية</option>';
-
-    shippingData.forEach(item => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = item.wilaya;
-
-        option.textContent =
-            item.code + " - " + item.wilaya;
-
-        select.appendChild(option);
-
-    });
-
-}
-
-/**
- * تعبئة البلديات
- */
-export function populateCommunes(
-    wilaya,
-    communeSelect
-) {
-
-    communeSelect.innerHTML =
-        '<option value="">اختر البلدية</option>';
-
-    const item =
-        shippingData.find(
-
-            x => x.wilaya === wilaya
-
-        );
-
-    if (!item) {
-
-        return;
-
-    }
-
-    item.communes.forEach(name => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = name;
-
-        option.textContent = name;
-
-        communeSelect.appendChild(option);
-
-    });
-
-}
 
 /**
  * سعر الشحن
