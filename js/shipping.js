@@ -56,7 +56,100 @@ export async function loadWilayas() {
 
 }
 
+/**
+ * تعبئة قائمة الولايات
+ */
+export function populateWilayas(
+    button,
+    list
+) {
 
+    list.innerHTML = "";
+
+    shippingData.forEach(item => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "dropdown-item";
+
+        div.textContent =
+            item.code + " - " + item.wilaya;
+
+        div.onclick = () => {
+
+            selectedWilaya =
+                item.wilaya;
+
+            button.textContent =
+                item.code +
+                " - " +
+                item.wilaya;
+
+            list.classList.remove("show");
+
+        };
+
+        list.appendChild(div);
+
+    });
+
+}
+
+/**
+ * تعبئة البلديات
+ */
+export function populateCommunes(
+    wilaya,
+    button,
+    list
+) {
+
+    list.innerHTML = "";
+
+    const item =
+        shippingData.find(
+
+            x => x.wilaya === wilaya
+
+        );
+
+    if (!item) {
+
+        return;
+
+    }
+
+    item.communes.forEach(name => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "dropdown-item";
+
+        div.textContent =
+            name;
+
+        div.onclick = () => {
+
+            selectedCommune =
+                name;
+
+            button.textContent =
+                name;
+
+            list.classList.remove("show");
+
+        };
+
+        list.appendChild(div);
+
+    });
+
+}
+ 
 /**
  * سعر الشحن
  */
@@ -98,5 +191,16 @@ export function getWilaya(name) {
         x => x.wilaya === name
 
     );
+
+}
+export function getSelectedWilaya() {
+
+    return selectedWilaya;
+
+}
+
+export function getSelectedCommune() {
+
+    return selectedCommune;
 
 }
