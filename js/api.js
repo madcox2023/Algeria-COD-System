@@ -13,50 +13,33 @@ export async function submitOrder(orderData) {
 
     try {
 
-        const formData =
-            new URLSearchParams();
+        const body = new URLSearchParams();
 
-        Object.keys(orderData)
-            .forEach(key => {
+        Object.keys(orderData).forEach(key => {
 
-                formData.append(
-                    key,
-                    orderData[key]
-                );
+            body.append(key, orderData[key]);
 
-            });
+        });
 
-        const response =
-            await fetch(
+        const response = await fetch(CONFIG.API_URL, {
 
-                CONFIG.API_URL,
+            method: "POST",
 
-                {
+            body
 
-                    method: "POST",
-
-                    body: formData
-
-                }
-
-            );
+        });
 
         if (!response.ok) {
 
-            throw new Error(
-                `HTTP ${response.status}`
-            );
+            throw new Error(`HTTP ${response.status}`);
 
         }
-
-        const result =
-            await response.json();
 
         return {
 
             success: true,
 
-            data: result
+            data: await response.json()
 
         };
 
@@ -64,10 +47,7 @@ export async function submitOrder(orderData) {
 
     catch (error) {
 
-        console.error(
-            "Submit Order Error:",
-            error
-        );
+        console.error(error);
 
         return {
 
@@ -80,7 +60,6 @@ export async function submitOrder(orderData) {
     }
 
 }
-
 /**
  * جلب بيانات المنتج
  */
