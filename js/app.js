@@ -354,33 +354,42 @@ UPDATE SHIPPING
 
 function updateShipping() {
 
-    const wilaya =
-        elements.wilaya.value;
+    console.log("===== UPDATE SHIPPING =====");
+
+    const wilaya = elements.wilaya.value;
+
+    console.log("Selected Wilaya:", wilaya);
 
     populateCommunes(
-
         wilaya,
-
         elements.commune
+    );
 
+    console.log(
+        "Commune HTML:",
+        elements.commune.innerHTML
     );
 
     const shippingType =
-
         document.querySelector(
-
             'input[name="shipping"]:checked'
-
         ).value;
+
+    console.log(
+        "Shipping Type:",
+        shippingType
+    );
 
     currentShippingPrice =
         getShippingPrice(
-
             wilaya,
-
             shippingType
-
         );
+
+    console.log(
+        "Shipping Price:",
+        currentShippingPrice
+    );
 
     updateSummary();
 
