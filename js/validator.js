@@ -196,36 +196,100 @@ export function validateProduct(productId) {
  */
 export function validateOrder(order) {
 
-    const validators = [
+    let result;
 
-        validateName(order.customerName),
+    result =
+        validateName(
+            order.customerName
+        );
 
-        validatePhone(order.phone),
+    if (!result.valid) {
 
-        validateWilaya(order.wilaya),
+        return result;
 
-        validateCommune(order.commune),
+    }
 
-        validateAddress(order.address),
+    result =
+        validatePhone(
+            order.phone
+        );
 
-        validateQuantity(order.quantity),
+    if (!result.valid) {
 
-        validateShipping(order.shippingType),
+        return result;
 
-        validateProduct(order.productId)
+    }
 
-    ];
+    result =
+        validateWilaya(
+            order.wilaya
+        );
 
-    for (const result of validators) {
+    if (!result.valid) {
 
-        if (!result.valid) {
-            return result;
-        }
+        return result;
+
+    }
+
+    result =
+        validateCommune(
+            order.commune
+        );
+
+    if (!result.valid) {
+
+        return result;
+
+    }
+
+    result =
+        validateAddress(
+            order.address
+        );
+
+    if (!result.valid) {
+
+        return result;
+
+    }
+
+    result =
+        validateQuantity(
+            order.quantity
+        );
+
+    if (!result.valid) {
+
+        return result;
+
+    }
+
+    result =
+        validateShipping(
+            order.shippingType
+        );
+
+    if (!result.valid) {
+
+        return result;
+
+    }
+
+    result =
+        validateProduct(
+            order.productId
+        );
+
+    if (!result.valid) {
+
+        return result;
 
     }
 
     return {
+
         valid: true
+
     };
 
 }
