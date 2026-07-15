@@ -17,6 +17,7 @@ import {
     loadWilayas,
     loadShippingPrices,
     populateWilayas,
+    populateCommunes,
     getShippingPrice
 } from "./shipping.js";
 
