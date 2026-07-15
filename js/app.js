@@ -256,11 +256,7 @@ LOAD SHIPPING
 
 async function loadShippingData() {
 
-    currentWilayas =
-        await loadWilayas();
-
-    currentShipping =
-        await loadShippingPrices();
+    await loadShippingPrices();
 
     populateWilayas(
         elements.wilaya
