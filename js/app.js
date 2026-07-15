@@ -170,17 +170,7 @@ function cacheElements() {
 
 }
 
-/*==========================================
-INITIALIZE SYSTEM
-==========================================*/
 
-async function initializeSystem() {
-
-    console.log(
-        "Loading system..."
-    );
-
-}
 
 /* END PART 1 */
 /*==========================================
