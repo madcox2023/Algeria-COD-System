@@ -1,41 +1,18 @@
 /**
+ * ==========================================
  * Algeria COD System
  * shipping.js
+ * Version 2.0.0
+ * ==========================================
  */
 
 import { CONFIG } from "./config.js";
 
-/* الولايات */
-let wilayas = [];
-
-/* أسعار الشحن */
-let shippingPrices = [];
+/* بيانات الشحن */
+let shippingData = [];
 
 /**
- * تحميل الولايات من JSON
- */
-export async function loadWilayas() {
-
-    try {
-
-        const response = await fetch("./data/wilayas.json");
-
-        wilayas = await response.json();
-
-        return wilayas;
-
-    } catch (error) {
-
-        console.error("Load Wilayas Error:", error);
-
-        return [];
-
-    }
-
-}
-
-/**
- * تحميل أسعار الشحن من Google Apps Script
+ * تحميل بيانات الشحن من Google Sheet
  */
 export async function loadShippingPrices() {
 
@@ -45,13 +22,23 @@ export async function loadShippingPrices() {
             CONFIG.API_URL + "?action=shipping"
         );
 
-        shippingPrices = await response.json();
+        const json = await response.json();
 
-        return shippingPrices;
+        if (!json.success) {
 
-    } catch (error) {
+            return [];
 
-        console.error("Shipping Error:", error);
+        }
+
+        shippingData = json.shipping;
+
+        return shippingData;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
 
         return [];
 
@@ -60,38 +47,91 @@ export async function loadShippingPrices() {
 }
 
 /**
- * تعبئة قائمة الولايات
+ * لم نعد نستخدم wilayas.json
  */
-export function populateWilayas(selectElement) {
+export async function loadWilayas() {
 
-    selectElement.innerHTML =
+    return shippingData;
+
+}
+
+/**
+ * تعبئة الولايات
+ */
+export function populateWilayas(select) {
+
+    select.innerHTML =
         '<option value="">اختر الولاية</option>';
 
-    wilayas.forEach((wilaya) => {
+    shippingData.forEach(item => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
-        option.value = wilaya.name;
+        option.value = item.wilaya;
 
         option.textContent =
-            wilaya.code + " - " + wilaya.name;
+            item.code + " - " + item.wilaya;
 
-        selectElement.appendChild(option);
+        select.appendChild(option);
 
     });
 
 }
 
 /**
- * الحصول على سعر الشحن
+ * تعبئة البلديات
  */
-export function getShippingPrice(wilayaName, shippingType) {
+export function populateCommunes(
+    wilaya,
+    communeSelect
+) {
 
-    const item = shippingPrices.find(
+    communeSelect.innerHTML =
+        '<option value="">اختر البلدية</option>';
 
-        (row) => row.wilaya === wilayaName
+    const item =
+        shippingData.find(
 
-    );
+            x => x.wilaya === wilaya
+
+        );
+
+    if (!item) {
+
+        return;
+
+    }
+
+    item.communes.forEach(name => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = name;
+
+        option.textContent = name;
+
+        communeSelect.appendChild(option);
+
+    });
+
+}
+
+/**
+ * سعر الشحن
+ */
+export function getShippingPrice(
+    wilaya,
+    shippingType
+) {
+
+    const item =
+        shippingData.find(
+
+            x => x.wilaya === wilaya
+
+        );
 
     if (!item) {
 
@@ -101,28 +141,22 @@ export function getShippingPrice(wilayaName, shippingType) {
 
     if (shippingType === "Home") {
 
-        return Number(item.homeShipping);
+        return Number(item.home);
 
     }
 
-    if (shippingType === "Desk") {
-
-        return Number(item.deskShipping);
-
-    }
-
-    return 0;
+    return Number(item.desk);
 
 }
 
 /**
- * البحث عن ولاية
+ * الحصول على ولاية
  */
-export function getWilaya(code) {
+export function getWilaya(name) {
 
-    return wilayas.find(
+    return shippingData.find(
 
-        (item) => item.code == code
+        x => x.wilaya === name
 
     );
 
