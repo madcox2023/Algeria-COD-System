@@ -870,3 +870,51 @@ async function submitCurrentOrder() {
     }
 
 }
+
+
+
+/*==========================================
+resetForm
+==========================================*/
+function resetForm() {
+
+    // الاسم
+    elements.customerName.value = "";
+
+    // الهاتف
+    elements.phone.value = "";
+
+    // العنوان
+    elements.address.value = "";
+
+    // الكمية
+    state.quantity = 1;
+    elements.quantity.value = 1;
+
+    // الولاية
+    state.selectedWilaya = null;
+    elements.wilayaButton.textContent =
+        "اختر الولاية";
+
+    // البلدية
+    state.selectedCommune = null;
+    elements.communeButton.textContent =
+        "اختر البلدية";
+
+    elements.communeList.innerHTML = "";
+
+    // نوع الشحن
+    state.shippingType = "Home";
+
+    document.querySelector(
+        'input[value="Home"]'
+    ).checked = true;
+
+    // سعر الشحن
+    state.shippingPrice = 0;
+
+    // تحديث الملخص
+    updateSummary();
+
+}
+
