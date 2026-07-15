@@ -38,9 +38,6 @@ let currentProduct = null;
 
 let currentShippingPrice = 0;
 
-let currentWilayas = [];
-
-let currentShipping = [];
 
 /*==========================================
 DOM ELEMENTS
