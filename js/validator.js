@@ -243,9 +243,20 @@ export function validateOrder(order) {
     }
 
     result =
+        if (order.shippingType === "Home") {
+
+    const result =
         validateAddress(
             order.address
         );
+
+    if (!result.valid) {
+
+        return result;
+
+    }
+
+}
 
     if (!result.valid) {
 
